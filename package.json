@@ -1,0 +1,21 @@
+{
+  "name": "webpack-sfdc-deploy-plugin",
+  "version": "1.0.0",
+  "description": "This is Webpack plugin for deploying static resource to Salesforce organizations.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "webpack",
+    "plugin",
+    "sfdc",
+    "saleforce"
+  ],
+  "author": "Ruslan Kurchenko",
+  "license": "ISC",
+  "dependencies": {
+    "jsforce": "^1.7.1",
+    "node-zip": "^1.1.1"
+  }
+}
