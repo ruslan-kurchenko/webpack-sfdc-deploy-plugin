@@ -12,6 +12,10 @@
     "sfdc",
     "saleforce"
   ],
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/henko-okdev/webpack-sfdc-deploy-plugin.git"
+  },
   "author": "Ruslan Kurchenko",
   "license": "ISC",
   "dependencies": {
