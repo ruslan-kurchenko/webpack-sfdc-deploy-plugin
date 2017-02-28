@@ -1,6 +1,8 @@
 "use strict";
 
 const fs = require('fs'),
+    path = require('path'),
+    _ = require('lodash'),
     jsforce = require('jsforce'),
     Zip = require('node-zip');
 
@@ -33,11 +35,13 @@ class WebpackSfdcDeployPlugin {
         }
 
         const dir = this.options.filesFolderPath;
+
         compiler.plugin('done', stats => {
             if (stats.hasErrors()) {
                 this.printErrors(stats.compilation.errors);
                 return;
             }
+            this.prepareFileValidation();
 
             fs.readdir(dir, (err, files) => {
                 if (err) {
@@ -45,9 +49,11 @@ class WebpackSfdcDeployPlugin {
                 }
 
                 const resourceZip = new Zip();
-                files.forEach(file => {
-                    const data = fs.readFileSync(dir + file, 'utf8'); // may need to add '/'
-                    resourceZip.file(file, data);
+                files.forEach(fileName => {
+                    if(this.validateFile(fileName)) {
+                        const data = fs.readFileSync(path.resolve(dir, fileName), 'utf8');
+                        resourceZip.file(fileName, data);
+                    }
                 });
 
                 if (this.options.deploy) {
@@ -75,7 +81,7 @@ class WebpackSfdcDeployPlugin {
         const username = this.options.forceComConfig.username;
         const password = this.options.forceComConfig.password + this.options.forceComConfig.token;
 
-        conn.login(username, password, (err, res) => {
+        conn.login(username, password, (err) => {
             if (err) throw err;
 
             conn.metadata.upsert('StaticResource', payload, (err, results) => {
@@ -95,6 +101,36 @@ class WebpackSfdcDeployPlugin {
         }
 
         this.errors.forEach(err => { console.error('ERROR: ' + err); });
+    }
+
+    prepareFileValidation() {
+        const includeValidators = WebpackSfdcDeployPlugin.formatValidationArrays(this.options.include);
+        const excludeValidators = WebpackSfdcDeployPlugin.formatValidationArrays(this.options.exclude);
+        const validate = !!(includeValidators.length || excludeValidators.length);
+        const include = includeValidators.length > 0;
+        const validators = include ? includeValidators : excludeValidators;
+
+        this.fileValidation = {
+            validate: validate,
+            include: include,
+            validators: validators
+        }
+    }
+
+    validateFile(fileName) {
+        return this.fileValidation.validators.length
+            ? !!this.fileValidation.validators.find(exp => _.isRegExp(exp)
+                ? fileName.search(exp) > -1 === this.fileValidation.include
+                : (exp === fileName) === this.fileValidation.include)
+            : true;
+    }
+
+
+
+
+
+    static formatValidationArrays(validators) {
+        return _.isArray(validators) ? validators : (!!validators ? [ validators ] : []);
     }
 
     static printResult(results) {

@@ -16,6 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "jsforce": "^1.7.1",
-    "node-zip": "^1.1.1"
+    "node-zip": "^1.1.1",
+    "lodash": "^4.17.4"
   }
 }
