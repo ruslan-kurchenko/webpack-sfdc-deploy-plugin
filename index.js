@@ -22,9 +22,9 @@ class WebpackSfdcDeployPlugin {
         }
 
         try {
-            this.options.forceComConfig = require(options.credentialsUrl);
+            this.options.forceComConfig = require(options.credentialsPath);
         } catch (e) {
-            this.errors.push('Salesforce.com credentials was not found by specified URL: ' + options.credentialsUrl);
+            this.errors.push('Salesforce.com credentials was not found by specified URL: ' + options.credentialsPath);
         }
     }
 
