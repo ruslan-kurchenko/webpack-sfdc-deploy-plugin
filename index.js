@@ -97,7 +97,7 @@ class WebpackSfdcDeployPlugin {
 
     printErrors(errors) {
         if(errors && errors.length) {
-            this.errors.contact(errors);
+            this.errors.concat(errors);
         }
 
         this.errors.forEach(err => { console.error('ERROR: ' + err); });
