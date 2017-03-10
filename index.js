@@ -75,6 +75,10 @@ class WebpackSfdcDeployPlugin {
                 contentType: 'application/zip',
                 cacheControl: 'Private'
             });
+
+            if(this.options.srcFolderPath) {
+                this.replaceSrcStaticResource(resourceZip);
+            }
         }
 
         const conn = new jsforce.Connection();
@@ -92,6 +96,14 @@ class WebpackSfdcDeployPlugin {
 
                 WebpackSfdcDeployPlugin.printResult(results);
             });
+        });
+    }
+
+    replaceSrcStaticResource(resourceZip) {
+        const staticResourcePath = path.resolve(this.options.srcFolderPath, 'staticresources/' + this.options.staticResourceName + '.resource');
+        const data = resourceZip.generate({type: 'nodebuffer', compression: 'DEFLATE'});
+        fs.writeFile(staticResourcePath, data, 'binary', (err) => {
+            if(err) this.printErrors(err);
         });
     }
 
@@ -125,21 +137,17 @@ class WebpackSfdcDeployPlugin {
             : true;
     }
 
-
-
-
-
     static formatValidationArrays(validators) {
         return _.isArray(validators) ? validators : (!!validators ? [ validators ] : []);
     }
 
     static printResult(results) {
-        const delimiter = '\n======================================================\n';
-        const successMsg = delimiter + 'The Static Resource: "' + results.fullName + '" was successfully ';
+        const delimiter = '======================================================';
+        const successMsg = delimiter + '\nThe Static Resource: "' + results.fullName + '" was successfully ';
         if (results.created && results.success) {
-            console.log(successMsg + 'created!' + delimiter);
+            console.log(successMsg + 'created!\n' + delimiter);
         } else if (results.success) {
-            console.log(successMsg + 'updated!' + delimiter);
+            console.log(successMsg + 'updated!\n' + delimiter);
         } else {
             console.log(results);
         }
