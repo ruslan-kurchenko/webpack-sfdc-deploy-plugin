@@ -51,7 +51,7 @@ Required values are as follows:
 #### Basic deploy
 ```javascript
 var path = require('path');
-var WebpackSfdcDeployPlugin = require('wevpack-sfdc-deploy-plugin');
+var SfdcDeployPlugin = require('webpack-sfdc-deploy-plugin');
 var webpackConfig = {
   entry: 'index.js',
   output: {
@@ -59,7 +59,7 @@ var webpackConfig = {
     filename: 'bundle.js'
   },
   plugins: [
-      new WebpackSfdcDeployPlugin({
+      new SfdcDeployPlugin({
           credentialsPath: path.resolve(__dirname, 'sfdc-org-config.js'),
           filesFolderPath : path.resolve(__dirname, 'dist'),
           staticResourceName : 'AwesomeApplication'         
