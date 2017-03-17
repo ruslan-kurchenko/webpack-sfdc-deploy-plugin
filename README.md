@@ -42,7 +42,7 @@ module.exports = {
 
 #### Configuration
 
-You need pass a hash of configuration options to `WebpackSfdcDeployPlugin`.     
+You need pass a hash of configuration options to `SfdcDeployPlugin`.     
 Required values are as follows:
 - `credentialsPath`: The relative path to `.js` file with credentials to you Salesforce org.
 - `filesFolderPath`: The relative path to the folder where placed files that need to be deployed.
