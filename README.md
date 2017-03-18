@@ -76,7 +76,7 @@ using Salesforce credentials that are placed in `sfdc-org-config.js` file.
 The plugin has next optional configuration:
 - `exclude`: The array of Strings/RegExp to exclude files from deploying.
 - `include`: The array of Strings/RegExp to include only certain files to deploying. This option overrides `exclude` configuration.
-- `srcFolderPath`: The relative path to the folder with Salesforce static resources. If it provided, the plugin will replace old version of static resource with a newly bundled.
+- `srcFolderPath`: The relative path to the _src_ folder with Salesforce project metadata. If this option provided the plugin will search for old version of static resource and replace it with a newly bundled. (search for _`srcFolderPath`/staticresources/`staticResourceName`_)
 
 > Also, you can provide only String/RegExp instead of array - `exclude: 'vendors.bundle.js'`
 

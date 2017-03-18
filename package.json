@@ -1,6 +1,6 @@
 {
   "name": "webpack-sfdc-deploy-plugin",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "description": "This is Webpack plugin for deploying static resource to Salesforce organizations.",
   "main": "index.js",
   "scripts": {
