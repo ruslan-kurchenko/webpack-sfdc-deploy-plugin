@@ -73,7 +73,7 @@ class WebpackSfdcDeployPlugin {
                 fullName: this.options.staticResourceName,
                 content: resourceZip.generate({base64: true, compression: 'DEFLATE'}),
                 contentType: 'application/zip',
-                cacheControl: 'Private'
+                cacheControl: this.options.isPublic ? 'Public' : 'Private'
             });
 
             if(this.options.srcFolderPath) {
