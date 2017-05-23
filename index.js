@@ -81,9 +81,9 @@ class WebpackSfdcDeployPlugin {
             }
         }
 
-        const conn = new jsforce.Connection();
+        const conn = new jsforce.Connection({loginUrl: this.options.forceComConfig.url || 'https://login.salesforce.com'});
         const username = this.options.forceComConfig.username;
-        const password = this.options.forceComConfig.password + this.options.forceComConfig.token;
+        const password = this.options.forceComConfig.password + (this.options.forceComConfig.token ? this.options.forceComConfig.token : '');
 
         conn.login(username, password, (err) => {
             if (err) throw err;
