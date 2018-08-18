@@ -36,31 +36,62 @@ class WebpackSfdcDeployPlugin {
 
         const dir = this.options.filesFolderPath;
 
-        compiler.plugin('done', stats => {
+        const applyFn = stats => {
             if (stats.hasErrors()) {
                 this.printErrors(stats.compilation.errors);
                 return;
             }
             this.prepareFileValidation();
 
-            fs.readdir(dir, (err, files) => {
+            const resourceZip = new Zip();
+
+            this.addDirectoryToZipResource(resourceZip, dir).then(() => {
+              if (this.options.deploy) {
+                  this.deploy(resourceZip);
+              }
+            }).catch(e => { throw(e) });
+
+        };
+
+        if ('hooks' in compiler) {
+          // v4 approach:
+          compiler.hooks.done.tap('SfdcDeployPlugin', applyFn.bind(this));
+        } else {
+          // legacy approach:
+          compiler.plugin('done', applyFn.bind(this));
+        }
+
+
+    }
+
+    addDirectoryToZipResource(resourceZip, dirName) {
+        return new Promise((resolve, reject) => {
+            fs.readdir(dirName, async (err, filesOrDirectories) => {
                 if (err) {
                     this.printErrors(err);
+                    reject(err);
                 }
 
-                const resourceZip = new Zip();
-                files.forEach(fileName => {
-                    if(this.validateFile(fileName)) {
-                        const data = fs.readFileSync(path.resolve(dir, fileName), 'utf8');
-                        resourceZip.file(fileName, data);
-                    }
-                });
+                const zipDirName = dirName.slice(this.options.filesFolderPath.length + 1);
 
-                if (this.options.deploy) {
-                    this.deploy(resourceZip);
-                }
+                resolve(Promise.all(
+                    filesOrDirectories.map(async fileOrDirName => {
+                        let fullPathName = path.resolve(dirName, fileOrDirName);
+                        let zipPathName = zipDirName + '/' + fileOrDirName;
+
+                        if(fs.lstatSync(fullPathName).isDirectory()) {
+                            resourceZip.folder(zipPathName)
+                            await this.addDirectoryToZipResource(
+                              resourceZip, dirName + '/' + fileOrDirName
+                            );
+
+                        } else if(this.validateFile(fileOrDirName)) {
+                            const data = fs.readFileSync(fullPathName, 'utf8');
+                            resourceZip.file(zipPathName, data);
+                        }
+                    })
+                ));
             });
-
         });
     }
 
